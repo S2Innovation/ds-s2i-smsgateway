@@ -56,7 +56,7 @@ class SMSGateway(Device):
     # Attributes
     # ----------
 
-    SendSMS = attribute(
+    TextMessage = attribute(
         dtype='str',
         access=AttrWriteType.WRITE,
         doc="SMS content, Max length is 160.",
@@ -89,6 +89,7 @@ class SMSGateway(Device):
             test_connection.raise_for_status()
             self.set_state(PyTango.DevState.ON)
             self.set_status('Connected with SMS Gatway')
+            self.url = url
         except socket.error:
             self.set_state(PyTango.DevState.UNKNOWN)
             self.set_status('Bad request made, a 4XX client error or 5XX server error response')
@@ -110,8 +111,8 @@ class SMSGateway(Device):
     # Attributes methods
     # ------------------
 
-    def write_SendSMS(self, value):
-        # PROTECTED REGION ID(SMSGateway.SendSMS_write) ENABLED START #
+    def write_TextMessage(self, value):
+        # PROTECTED REGION ID(SMSGateway.TextMessage_write) ENABLED START #
 
         #SMS Max length is 160.
         if len(value) > 160:
@@ -122,11 +123,12 @@ class SMSGateway(Device):
             logging.error('Non-ASCII characters', traceback.format_exc())
             # Remove anything non-ASCII
             value = ''.join([i if ord(i) < 128 else ' ' for i in value])
-            return value
+            self.TextMessage = value
+            return self.TextMessage
 
 
 
-        # PROTECTED REGION END #    //  SMSGateway.SendSMS_write
+        # PROTECTED REGION END #    //  SMSGateway.TextMessage_write
 
     def write_Phone(self, value):
         # PROTECTED REGION ID(SMSGateway.Phone_write) ENABLED START #
@@ -148,14 +150,33 @@ class SMSGateway(Device):
             return Pattern.match(s)
 
         if isValidInt(value) or isValid(value):
-            return value
+            self.Phone = value
+            return self.Phone
 
-        # PROTECTED REGION END #    //  SMSGateway.Phone_write
+            # PROTECTED REGION END #    //  SMSGateway.Phone_write
 
 
     # --------
     # Commands
     # --------
+    @command(
+    )
+    @DebugIt()
+    def SendSMS(self):
+        # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
+        try:
+            message = self.url + '/manualSMSRefresh.htm?Phone=' + self.Phone + '&SMSContent=' + self.TextMessage
+            send = requests.get(message)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+            self.set_status('Message sent')
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Message NOT sent')
+            logging.error('Message NOT sent', traceback.format_exc())
+
+
+        # PROTECTED REGION END #    //  SMSGateway.SendSMS
 
     @command(
     )

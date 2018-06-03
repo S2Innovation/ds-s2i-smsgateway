@@ -84,8 +84,14 @@ class SMSGatewayDeviceTestCase(DeviceTestCase):
     def test_SendSMS(self):
         """Test for SendSMS"""
         # PROTECTED REGION ID(SMSGateway.test_SendSMS) ENABLED START #
-        self.device.SendSMS
+        self.device.SendSMS()
         # PROTECTED REGION END #    //  SMSGateway.test_SendSMS
+
+    def test_TextMessage(self):
+        """Test for TextMessage"""
+        # PROTECTED REGION ID(SMSGateway.test_TextMessage) ENABLED START #
+        self.device.TextMessage
+        # PROTECTED REGION END #    //  SMSGateway.test_TextMessage
 
     def test_Phone(self):
         """Test for Phone"""

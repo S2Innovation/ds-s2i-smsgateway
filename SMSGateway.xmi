@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://www.esrf.fr/tango/pogo/PogoDsl">
   <classes name="SMSGateway" pogoRevision="9.6">
-    <description description="" title="SMSGateway for PANIC" sourcePath="/home/tango-cs/workspace/ds-s2i-smsgateway/" language="PythonHL" filestogenerate="XMI   file,Code files,Python Package,Protected Regions,Sphinx,html Pages" license="MIT" copyright="" hasMandatoryProperty="true" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false" descriptionHtmlExists="false">
+    <description description="" title="SMSGateway for PANIC" sourcePath="/home/tango-cs/workspace/ds-s2i-oncellg3111/" language="PythonHL" filestogenerate="XMI   file,Code files,Python Package,Protected Regions,Sphinx,html Pages" license="MIT" copyright="" hasMandatoryProperty="true" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false" descriptionHtmlExists="false">
       <inheritances classname="Device_Impl" sourcePath=""/>
       <identification contact="at gmail.com - lzytniak" author="lzytniak" emailDomain="gmail.com" classFamily="Communication" siteSpecific="" platform="Unix Like" bus="TCP/UDP" manufacturer="S2Innovation" reference="">
         <keyWords>SMS</keyWords>
@@ -53,7 +53,16 @@
       </argout>
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
     </commands>
-    <attributes name="SendSMS" attType="Scalar" rwType="WRITE" displayLevel="OPERATOR" polledPeriod="0" maxX="" maxY="" allocReadMember="false" isDynamic="false">
+    <commands name="SendSMS" description="" execMethod="send_sms" displayLevel="OPERATOR" polledPeriod="0" isDynamic="false">
+      <argin description="">
+        <type xsi:type="pogoDsl:VoidType"/>
+      </argin>
+      <argout description="">
+        <type xsi:type="pogoDsl:VoidType"/>
+      </argout>
+      <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
+    </commands>
+    <attributes name="TextMessage" attType="Scalar" rwType="WRITE" displayLevel="OPERATOR" polledPeriod="0" maxX="" maxY="" allocReadMember="false" isDynamic="false">
       <dataType xsi:type="pogoDsl:StringType"/>
       <changeEvent fire="false" libCheckCriteria="false"/>
       <archiveEvent fire="false" libCheckCriteria="false"/>
