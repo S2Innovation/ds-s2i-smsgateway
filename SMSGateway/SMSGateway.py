@@ -112,12 +112,44 @@ class SMSGateway(Device):
 
     def write_SendSMS(self, value):
         # PROTECTED REGION ID(SMSGateway.SendSMS_write) ENABLED START #
-        pass
+
+        #SMS Max length is 160.
+        if len(value) > 160:
+            value = value[:160]
+        # Check that a sms contains only ASCII characters
+
+        if not(all(ord(char) < 128 for char in value)):
+            logging.error('Non-ASCII characters', traceback.format_exc())
+            # Remove anything non-ASCII
+            value = ''.join([i if ord(i) < 128 else ' ' for i in value])
+            return value
+
+
+
         # PROTECTED REGION END #    //  SMSGateway.SendSMS_write
 
     def write_Phone(self, value):
         # PROTECTED REGION ID(SMSGateway.Phone_write) ENABLED START #
-        pass
+        import re
+        # Remove ' ', '-' from number
+        value = ''.join([i if i not in [' ', '-'] else '' for i in value])
+
+        # '0048511049007' => '+48511049007'
+        if value[:2] == '00':
+            value = '+' + value[2:]
+
+        # International number
+        def isValidInt(s):
+            Pattern = re.compile("^\+(\d{2}\d{3}\d{3}\d{3})")
+            return Pattern.match(s)
+
+        def isValid(s):
+            Pattern = re.compile("^(\d{3}\d{3}\d{3})")
+            return Pattern.match(s)
+
+        if isValidInt(value) or isValid(value):
+            return value
+
         # PROTECTED REGION END #    //  SMSGateway.Phone_write
 
 
