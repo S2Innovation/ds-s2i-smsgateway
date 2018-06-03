@@ -1,0 +1,2 @@
+.. automodule:: SMSGateway
+    :members: SMSGateway
