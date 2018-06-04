@@ -126,8 +126,6 @@ class SMSGateway(Device):
             self.TextMessage = value
             return self.TextMessage
 
-
-
         # PROTECTED REGION END #    //  SMSGateway.TextMessage_write
 
     def write_Phone(self, value):
@@ -155,7 +153,6 @@ class SMSGateway(Device):
 
             # PROTECTED REGION END #    //  SMSGateway.Phone_write
 
-
     # --------
     # Commands
     # --------
@@ -178,12 +175,43 @@ class SMSGateway(Device):
 
         # PROTECTED REGION END #    //  SMSGateway.SendSMS
 
+    @DebugIt()
+    def SetPin(self):
+        # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
+
+        #http://192.168.127.254/Set.htm?mode=2&opmode=2&pin=&Band=11&Submit=Submit&setfunc=Cellular
+        try:
+            message = self.url + '/Set.htm?mode=2&opmode=2&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
+            send = requests.get(message)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+            self.set_status('PIN updated')
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Pin NOT updated')
+            logging.error('Pin NOT updated', traceback.format_exc())
+
+        # PROTECTED REGION END #    //  SMSGateway.SendSMS
+
+
     @command(
     )
     @DebugIt()
     def Reset(self):
         # PROTECTED REGION ID(SMSGateway.Reset) ENABLED START #
-        pass
+
+        #http://192.168.127.254/SaveRestart.htm?
+        try:
+            message = self.url + '/SaveRestart.htm?'
+            send = requests.get(message)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+            self.set_status('Gateway restarted')
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Gateway NOT restarted')
+            logging.error('Gateway NOT restarted', traceback.format_exc())
+
         # PROTECTED REGION END #    //  SMSGateway.Reset
 
     @command(
@@ -191,7 +219,19 @@ class SMSGateway(Device):
     @DebugIt()
     def Connect(self):
         # PROTECTED REGION ID(SMSGateway.Connect) ENABLED START #
-        pass
+
+        #http://192.168.127.254/Set.htm?mode=2&opmode=0&pin=&Band=11&Submit=Submit&setfunc=Cellular
+        try:
+            message = self.url + '/Set.htm?mode=2&opmode=0&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
+            send = requests.get(message)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+            self.set_status('Message sent')
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Message NOT sent')
+            logging.error('Message NOT sent', traceback.format_exc())
+
         # PROTECTED REGION END #    //  SMSGateway.Connect
 
 # ----------
