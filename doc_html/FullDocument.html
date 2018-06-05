@@ -4,6 +4,52 @@
 <title> SMSGateway Tango Class User&lsquo;s Guide </title>
 </head>
 <body text="Black" bgcolor="White" link="Blue" vlink="Purple" alink="Red">
+<table border="0" width="100%" cellspacing="0" cellpadding="0" >
+        <td align="center">
+            <a href="http://www.esrf.fr/" target=new>
+                <img src="http://www.esrf.fr/gifs/logo/80.gif" border=0 height="35"></a>
+        </td>
+        <td align="center">
+            <a href="http://www.elettra.trieste.it/" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/elettra_logo.gif" border=0 height="35"></a>
+        </td>
+        <td align="center">
+            <a href="http://www.synchrotron-soleil.fr/" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/soleil_logo.gif" border=0 height="35"></a>
+        </td>
+        <td align="center">
+            <a href="http://www.cells.es/" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/alba.jpg" border=0 height="27"></a>
+        </td>
+        <td align="center">
+            <a href="http://www.tango-controls.org/" target="_top">
+               <img src="http://www.esrf.fr/computing/cs/tango/tango_logo.jpg" alt=""  height="40" /></a>
+        </td>
+        <td align="center">
+            <a href="http://www.desy.de/html/home/index_eng.html" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/desy.gif" border=0 height="26"></a>
+        </td>
+        <td align="center">
+            <a href="http://www.maxlab.lu.se/maxlab/max4/index.html" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/maxlab.gif" border=0 height="21"></a>
+        </td>
+        <td align="center">
+            <a href="http://www.frm2.tum.de/en/index.html" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/frm-2.jpg" border=0 height="24"></a>
+        </td>
+         <td align="center">
+            <a href="http://www.synchrotron.uj.edu.pl/" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/solaris_logo.gif" border=0 height="21"></a>
+        </td>
+         <td align="center">
+            <a href="http://www.anka.kit.edu/english/28.php" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/anka_blau_rot.png" border=0 height="25"></a>
+        </td>
+         <td align="center">
+            <a href="http://www.eli-hu.hu/" target=new>
+                <img src="http://www.esrf.fr/computing/cs/tango/eli-alps.jpg" border=0 height="32"></a>
+        </td>
+   </table>
 <hr>
 <br>
 <center><h2><u><b> SMSGateway Tango PythonHL Class </b></u></h2></center>	<br><br>
@@ -18,10 +64,12 @@
 				<li> <a href="FullDocument.html#cmdStatus"> Status </a>
 				<li> <a href="FullDocument.html#cmdReset"> Reset </a>
 				<li> <a href="FullDocument.html#cmdConnect"> Connect </a>
+				<li> <a href="FullDocument.html#cmdSendSMS"> SendSMS </a>
+				<li> <a href="FullDocument.html#cmdSetPin"> SetPin </a>
 			</ul>
 			<li> <a href="FullDocument.html#attributes">   Attributes   </a>
 			<ul>
-				<li> <a href="FullDocument.html#attrSendSMS"> SendSMS </a>
+				<li> <a href="FullDocument.html#attrTextMessage"> TextMessage </a>
 				<li> <a href="FullDocument.html#attrPhone"> Phone </a>
 			</ul>
 			<li> <a href="FullDocument.html#states">       States       </a>
@@ -108,7 +156,7 @@
 		<td> PIN </td>
 		<td> The PIN code is stored on the SIM card; if the PIN code cannot be accessed, then the modem will not be accessible over the network. </td>
 		<td> String </td>
-		<td> none </td>
+		<td> 9044 <br> </td>
 	</tr>
 </table>
 <br><br>
@@ -152,6 +200,20 @@
 		<td> DEV_VOID </td>
 		<td> OPERATOR </td>
 		<td> OpMode </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdSendSMS.html"> SendSMS </a> </td>
+		<td> DEV_VOID </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> None. </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdSetPin.html"> SetPin </a> </td>
+		<td> DEV_VOID </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> Set the PIN code; </td>
 	</tr>
 </table>
 <br><br><hr>
@@ -350,6 +412,103 @@
 		<td> .. </td>
 	</tr>
 </table>
+<br><br><hr>
+<a name="cmdSendSMS"> </a>
+<br><br><br>
+<font size="+1"><u><b> Command SendSMS : </b></u></font>
+<ul>
+</ul>
+<br><br><br>
+<Table Border=2 Cellpadding=3 CELLSPACING=0>
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+	<td colspan=0> <font size=+1> <center><b> SendSMS Definition </b></font></center></td>
+	</tr>
+	<tr>
+		<td> Input Argument </td>
+		<td> Tango::DEV_VOID </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td> Output Argument </td>
+		<td> Tango::DEV_VOID </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td> DisplayLevel </td>
+		<td> OPERATOR </td>
+		<td> .. </td>
+	</tr>
+	<tr>
+		<td> Inherited </td>
+		<td> false </td>
+		<td> .. </td>
+	</tr>
+	<tr>
+		<td> Abstract </td>
+		<td> false </td>
+		<td> .. </td>
+	</tr>
+	<tr>
+		<td> Polling Period </td>
+		<td> Not polled </td>
+		<td> .. </td>
+	</tr>
+<Tr BGCOLOR="#CCCCFF"><Td><Hr></Td><Td><Hr></Td><Td><Hr></Td></Tr>
+	<tr>
+		<td> Command allowed for </td>
+		<td> All states </td>
+		<td> .. </td>
+	</tr>
+</table>
+<br><br><hr>
+<a name="cmdSetPin"> </a>
+<br><br><br>
+<font size="+1"><u><b> Command SetPin : </b></u></font>
+<ul>
+	Set the PIN code;
+</ul>
+<br><br><br>
+<Table Border=2 Cellpadding=3 CELLSPACING=0>
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+	<td colspan=0> <font size=+1> <center><b> SetPin Definition </b></font></center></td>
+	</tr>
+	<tr>
+		<td> Input Argument </td>
+		<td> Tango::DEV_VOID </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td> Output Argument </td>
+		<td> Tango::DEV_VOID </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td> DisplayLevel </td>
+		<td> OPERATOR </td>
+		<td> .. </td>
+	</tr>
+	<tr>
+		<td> Inherited </td>
+		<td> false </td>
+		<td> .. </td>
+	</tr>
+	<tr>
+		<td> Abstract </td>
+		<td> false </td>
+		<td> .. </td>
+	</tr>
+	<tr>
+		<td> Polling Period </td>
+		<td> Not polled </td>
+		<td> .. </td>
+	</tr>
+<Tr BGCOLOR="#CCCCFF"><Td><Hr></Td><Td><Hr></Td><Td><Hr></Td></Tr>
+	<tr>
+		<td> Command allowed for </td>
+		<td> All states </td>
+		<td> .. </td>
+	</tr>
+</table>
 <br><br>
 <hr>
 <a name="attributes"> </a>
@@ -368,11 +527,11 @@
 		<td> <center><b> Description </b></center> </td>
 	</tr>
 	<tr>
-		<td> <a href="AttrSendSMS.html"> SendSMS </a> </td>
+		<td> <a href="AttrTextMessage.html"> TextMessage </a> </td>
 		<td> false </td>
 		<td> false </td>
 		<td> Scalar </td>
-		<td> WRITE </td>
+		<td> READ_WRITE </td>
 		<td> Tango::DEV_STRING </td>
 		<td> OPERATOR </td>
 		<td> SMS content, Max length is 160. </td>
@@ -382,7 +541,7 @@
 		<td> false </td>
 		<td> false </td>
 		<td> Scalar </td>
-		<td> WRITE </td>
+		<td> READ_WRITE </td>
 		<td> Tango::DEV_STRING </td>
 		<td> OPERATOR </td>
 		<td> SMS Receiveer </td>
@@ -394,9 +553,9 @@
 <font size="+1"><u><b> There is no dynamic attribute defined. </b></u></font>
 <br><br>
 <hr>
-<a name="attrSendSMS"> </a>
+<a name="attrTextMessage"> </a>
 <br><br><br>
-<font size="+1"><u><b> Attribute SendSMS : </b></u></font>
+<font size="+1"><u><b> Attribute TextMessage : </b></u></font>
 <ul>
 	SMS content, Max length is 160.
 </ul>
@@ -414,7 +573,7 @@
 				</tr>
 				<tr>
 					<td> R/W Type </td>
-					<td> WRITE </td>
+					<td> READ_WRITE </td>
 				</tr>
 				<tr>
 					<td> Data Type </td>
@@ -441,6 +600,10 @@
 					<td> Not set </td>
 				</tr>
 			<Tr BGCOLOR="#CCCCFF"><Td><Hr></Td><Td><Hr></Td></Tr>
+				<tr>
+					<td> Read allowed for </td>
+					<td> All states </td>
+				</tr>
 				<tr>
 					<td> Write allowed for </td>
 					<td> All states </td>
@@ -577,7 +740,7 @@
 				</tr>
 				<tr>
 					<td> R/W Type </td>
-					<td> WRITE </td>
+					<td> READ_WRITE </td>
 				</tr>
 				<tr>
 					<td> Data Type </td>
@@ -604,6 +767,10 @@
 					<td> Not set </td>
 				</tr>
 			<Tr BGCOLOR="#CCCCFF"><Td><Hr></Td><Td><Hr></Td></Tr>
+				<tr>
+					<td> Read allowed for </td>
+					<td> All states </td>
+				</tr>
 				<tr>
 					<td> Write allowed for </td>
 					<td> All states </td>

@@ -26,6 +26,8 @@ import requests
 import socket
 import traceback
 import logging
+import time
+from bs4 import BeautifulSoup
 
 # PROTECTED REGION END #    //  SMSGateway.additionnal_import
 
@@ -45,7 +47,6 @@ class SMSGateway(Device):
 
     IP = device_property(
         dtype='str',
-        # mandatory=True
     )
 
     PIN = device_property(
@@ -76,8 +77,8 @@ class SMSGateway(Device):
         Device.init_device(self)
         # PROTECTED REGION ID(SMSGateway.init_device) ENABLED START #
         self.get_device_properties()
-        self._phone = '+48519078083'
-        self._textmessage = 'Example Text Message'
+        self._phone = ''
+        self._textmessage = ''
 
         addr = str(self.IP)
         try:
@@ -90,9 +91,10 @@ class SMSGateway(Device):
 
         try:
             test_connection = requests.get(url)
+            time.sleep(3)
             test_connection.raise_for_status()
             self.set_state(PyTango.DevState.ON)
-            self.set_status('Connected with SMS Gatway')
+            self.set_status('Connected with SMS Gateway')
             self.url = url
         except socket.error:
             self.set_state(PyTango.DevState.UNKNOWN)
@@ -115,22 +117,38 @@ class SMSGateway(Device):
     # Attributes methods
     # ------------------
 
+    def read_TextMessage(self):
+        # PROTECTED REGION ID(SMSGateway.TextMessage_read) ENABLED START #
+        self.TextMessage.set_value(self._textmessage)
+        return self._textmessage
+        # PROTECTED REGION END #    //  SMSGateway.TextMessage_read
+
     def write_TextMessage(self, value):
         # PROTECTED REGION ID(SMSGateway.TextMessage_write) ENABLED START #
 
+        _text_message = value
         #SMS Max length is 160.
-        if len(value) > 160:
-            value = value[:160]
+        if (len(_text_message)) < 160 and (len(_text_message) > 0):
+            _text_message = _text_message[:160]
         # Check that a sms contains only ASCII characters
 
-        if not(all(ord(char) < 128 for char in value)):
+        if all(ord(char) < 128 for char in _text_message):
+            self._textmessage = _text_message
+            return self._textmessage
+        else:
             logging.error('Non-ASCII characters', traceback.format_exc())
-            # Remove anything non-ASCII
-            value = ''.join([i if ord(i) < 128 else ' ' for i in value])
-            self._textmessage = value
+            #Remove anything non-ASCII
+            _text_message = ''.join([i if ord(i) < 128 else ' ' for i in _text_message])
+            self._textmessage = _text_message
             return self._textmessage
 
         # PROTECTED REGION END #    //  SMSGateway.TextMessage_write
+
+    def read_Phone(self):
+        # PROTECTED REGION ID(SMSGateway.Phone_read) ENABLED START #
+        self.Phone.set_value(self._phone)
+        return self._phone
+        # PROTECTED REGION END #    //  SMSGateway.Phone_read
 
     def write_Phone(self, value):
         # PROTECTED REGION ID(SMSGateway.Phone_write) ENABLED START #
@@ -166,18 +184,32 @@ class SMSGateway(Device):
     def SendSMS(self):
         # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
 
-        print('Phone {0} and SMS {1}'.format(self._phone, self._textmessage))
-        # try:
-        #     message = self.url + '/manualSMSRefresh.htm?Phone=' + self.Phone + '&SMSContent=' + self.TextMessage
-        #     send = requests.get(message)
-        #     send.raise_for_status()
-        #     self.set_state(PyTango.DevState.ON)
-        #     self.set_status('Message sent')
-        # except socket.error:
-        #     self.set_state(PyTango.DevState.UNKNOWN)
-        #     self.set_status('Message NOT sent')
-        #     logging.error('Message NOT sent', traceback.format_exc())
+        # print('Phone {0} and SMS {1}'.format(self._phone, self._textmessage))
+        try:
+            message = self.url + '/manualSMSRefresh.htm?Phone=' + self._phone + '&SMSContent=' + self._textmessage
+            send = requests.get(message)
+            time.sleep(3)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Message NOT sent')
+            logging.error('Message NOT sent', traceback.format_exc())
 
+        #Log sent SMS on status
+        try:
+            text = ''
+            sms = self.url + '/manualSMS.htm'
+            page = requests.get(sms)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            output = soup.find_all('td')[8:]
+            for i, j in enumerate(output):
+                text = output[i].get_text() + '\n' + text
+            self.set_status(text)
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Pin NOT updated')
+            logging.error('Pin NOT updated', traceback.format_exc())
 
         # PROTECTED REGION END #    //  SMSGateway.SendSMS
 
@@ -189,6 +221,7 @@ class SMSGateway(Device):
         try:
             message = self.url + '/Set.htm?mode=2&opmode=2&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
             send = requests.get(message)
+            time.sleep(3)
             send.raise_for_status()
             self.set_state(PyTango.DevState.ON)
             self.set_status('PIN updated')
@@ -210,6 +243,7 @@ class SMSGateway(Device):
         try:
             message = self.url + '/SaveRestart.htm?'
             send = requests.get(message)
+            time.sleep(3)
             send.raise_for_status()
             self.set_state(PyTango.DevState.ON)
             self.set_status('Gateway restarted')
@@ -230,6 +264,7 @@ class SMSGateway(Device):
         try:
             message = self.url + '/Set.htm?mode=2&opmode=0&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
             send = requests.get(message)
+            time.sleep(3)
             send.raise_for_status()
             self.set_state(PyTango.DevState.ON)
             self.set_status('Message sent')
