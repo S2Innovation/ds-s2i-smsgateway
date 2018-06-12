@@ -181,10 +181,14 @@ class SMSGateway(Device):
     @command(
     )
     @DebugIt()
-    def SendSMS(self):
+    def SendSMS(self, argin):
         # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
 
         # print('Phone {0} and SMS {1}'.format(self._phone, self._textmessage))
+        # message = self.url + '/manualSMSRefresh.htm'
+        # payload = {'Phone': str(self._phone), 'SMSContent': str(self._textmessage)}
+        # r = requests.get(message, params=payload)
+
         try:
             message = self.url + '/manualSMSRefresh.htm?Phone=' + self._phone + '&SMSContent=' + self._textmessage
             send = requests.get(message)
@@ -218,6 +222,10 @@ class SMSGateway(Device):
         # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
 
         #http://192.168.127.254/Set.htm?mode=2&opmode=2&pin=&Band=11&Submit=Submit&setfunc=Cellular
+        # message = self.url + '/Set.htm'
+        # payload = {'mode': ' 2', 'opmode': '2', 'pin': str(self.PIN), 'Band': '11', 'Submit': 'Submit', 'setfunc': 'Cellular'}
+        # r = requests.get(message, params=payload)
+
         try:
             message = self.url + '/Set.htm?mode=2&opmode=2&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
             send = requests.get(message)
@@ -261,6 +269,10 @@ class SMSGateway(Device):
         # PROTECTED REGION ID(SMSGateway.Connect) ENABLED START #
 
         #http://192.168.127.254/Set.htm?mode=2&opmode=0&pin=&Band=11&Submit=Submit&setfunc=Cellular
+        # message = self.url + '/Set.htm'
+        # payload = {'mode': ' 2', 'opmode': '0', 'pin': str(self.PIN), 'Band': '11', 'Submit': 'Submit', 'setfunc': 'Cellular'}
+        # r = requests.get('message, params=payload)
+
         try:
             message = self.url + '/Set.htm?mode=2&opmode=0&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
             send = requests.get(message)

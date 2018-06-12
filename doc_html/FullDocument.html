@@ -65,7 +65,6 @@
 				<li> <a href="FullDocument.html#cmdReset"> Reset </a>
 				<li> <a href="FullDocument.html#cmdConnect"> Connect </a>
 				<li> <a href="FullDocument.html#cmdSendSMS"> SendSMS </a>
-				<li> <a href="FullDocument.html#cmdSetPin"> SetPin </a>
 			</ul>
 			<li> <a href="FullDocument.html#attributes">   Attributes   </a>
 			<ul>
@@ -203,17 +202,10 @@
 	</tr>
 	<tr>
 		<td> <a href="CmdSendSMS.html"> SendSMS </a> </td>
-		<td> DEV_VOID </td>
+		<td> DEV_STRING </td>
 		<td> DEV_VOID </td>
 		<td> OPERATOR </td>
 		<td> None. </td>
-	</tr>
-	<tr>
-		<td> <a href="CmdSetPin.html"> SetPin </a> </td>
-		<td> DEV_VOID </td>
-		<td> DEV_VOID </td>
-		<td> OPERATOR </td>
-		<td> Set the PIN code; </td>
 	</tr>
 </table>
 <br><br><hr>
@@ -425,56 +417,7 @@
 	</tr>
 	<tr>
 		<td> Input Argument </td>
-		<td> Tango::DEV_VOID </td>
-		<td>  </td>
-	</tr>
-	<tr>
-		<td> Output Argument </td>
-		<td> Tango::DEV_VOID </td>
-		<td>  </td>
-	</tr>
-	<tr>
-		<td> DisplayLevel </td>
-		<td> OPERATOR </td>
-		<td> .. </td>
-	</tr>
-	<tr>
-		<td> Inherited </td>
-		<td> false </td>
-		<td> .. </td>
-	</tr>
-	<tr>
-		<td> Abstract </td>
-		<td> false </td>
-		<td> .. </td>
-	</tr>
-	<tr>
-		<td> Polling Period </td>
-		<td> Not polled </td>
-		<td> .. </td>
-	</tr>
-<Tr BGCOLOR="#CCCCFF"><Td><Hr></Td><Td><Hr></Td><Td><Hr></Td></Tr>
-	<tr>
-		<td> Command allowed for </td>
-		<td> All states </td>
-		<td> .. </td>
-	</tr>
-</table>
-<br><br><hr>
-<a name="cmdSetPin"> </a>
-<br><br><br>
-<font size="+1"><u><b> Command SetPin : </b></u></font>
-<ul>
-	Set the PIN code;
-</ul>
-<br><br><br>
-<Table Border=2 Cellpadding=3 CELLSPACING=0>
-	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
-	<td colspan=0> <font size=+1> <center><b> SetPin Definition </b></font></center></td>
-	</tr>
-	<tr>
-		<td> Input Argument </td>
-		<td> Tango::DEV_VOID </td>
+		<td> Tango::DEV_STRING </td>
 		<td>  </td>
 	</tr>
 	<tr>
