@@ -174,7 +174,7 @@ class SMSGateway(Device):
         if isValidInt(value) or isValid(value):
             _phone_num = value
 
-        _text_message = tmp[1].strip()
+        _text_message = tmp[1].strip().decode('ascii', 'ignore')
 
         #SMS Max length is 160.
         if (len(_text_message)) < 160 and (len(_text_message) > 0):
@@ -196,31 +196,31 @@ class SMSGateway(Device):
             # payload = {'Phone': str(self._phone), 'SMSContent': str(self._textmessage)}
             # r = requests.get(message, params=payload)
 
-            try:
-                message = self.url + '/manualSMSRefresh.htm?Phone=' + _phone_num + '&SMSContent=' + _sms_text
-                send = requests.get(message)
-                time.sleep(3)
-                send.raise_for_status()
-                self.set_state(PyTango.DevState.ON)
-            except socket.error:
-                self.set_state(PyTango.DevState.UNKNOWN)
-                self.set_status('Message NOT sent')
-                logging.error('Message NOT sent', traceback.format_exc())
+        try:
+            message = self.url + '/manualSMSRefresh.htm?Phone=' + _phone_num + '&SMSContent=' + _sms_text
+            send = requests.get(message)
+            time.sleep(3)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Message NOT sent')
+            logging.error('Message NOT sent', traceback.format_exc())
 
-            # Log sent SMS on status
-            try:
-                text = ''
-                sms = self.url + '/manualSMS.htm'
-                page = requests.get(sms)
-                soup = BeautifulSoup(page.content, 'html.parser')
-                output = soup.find_all('td')[8:]
-                for i, j in enumerate(output):
-                    text = output[i].get_text() + '\n' + text
-                self.set_status(text)
-            except socket.error:
-                self.set_state(PyTango.DevState.UNKNOWN)
-                self.set_status('Pin NOT updated')
-                logging.error('Pin NOT updated', traceback.format_exc())
+        # Log sent SMS on status
+        try:
+            text = ''
+            sms = self.url + '/manualSMS.htm'
+            page = requests.get(sms)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            output = soup.find_all('td')[8:]
+            for i, j in enumerate(output):
+                text = output[i].get_text() + '\n' + text
+            self.set_status(text)
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Pin NOT updated')
+            logging.error('Pin NOT updated', traceback.format_exc())
 
         # PROTECTED REGION END #    //  SMSGateway.SendSMS
 
