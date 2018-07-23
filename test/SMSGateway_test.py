@@ -39,7 +39,7 @@ class SMSGatewayDeviceTestCase(DeviceTestCase):
     # PROTECTED REGION ID(SMSGateway.test_additionnal_import) ENABLED START #
     # PROTECTED REGION END #    //  SMSGateway.test_additionnal_import
     device = SMSGateway
-    properties = {'IP': '', 'PIN': '', 
+    properties = {'IP': '', 'PIN': '9044', 
                   }
     empty = None  # Should be []
 
@@ -84,8 +84,20 @@ class SMSGatewayDeviceTestCase(DeviceTestCase):
     def test_SendSMS(self):
         """Test for SendSMS"""
         # PROTECTED REGION ID(SMSGateway.test_SendSMS) ENABLED START #
-        self.device.SendSMS
+        self.device.SendSMS()
         # PROTECTED REGION END #    //  SMSGateway.test_SendSMS
+
+    def test_SetPin(self):
+        """Test for SetPin"""
+        # PROTECTED REGION ID(SMSGateway.test_SetPin) ENABLED START #
+        self.device.SetPin()
+        # PROTECTED REGION END #    //  SMSGateway.test_SetPin
+
+    def test_TextMessage(self):
+        """Test for TextMessage"""
+        # PROTECTED REGION ID(SMSGateway.test_TextMessage) ENABLED START #
+        self.device.TextMessage
+        # PROTECTED REGION END #    //  SMSGateway.test_TextMessage
 
     def test_Phone(self):
         """Test for Phone"""
