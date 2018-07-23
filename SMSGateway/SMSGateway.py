@@ -16,7 +16,7 @@ import PyTango
 from PyTango import DebugIt
 from PyTango.server import run
 from PyTango.server import Device, DeviceMeta
-from PyTango.server import attribute, command
+from PyTango.server import command
 from PyTango.server import device_property
 from PyTango import AttrQuality, DispLevel, DevState
 from PyTango import AttrWriteType, PipeWriteType
@@ -28,7 +28,7 @@ import traceback
 import logging
 import time
 from bs4 import BeautifulSoup
-
+import re
 # PROTECTED REGION END #    //  SMSGateway.additionnal_import
 
 __all__ = ["SMSGateway", "main"]
@@ -47,26 +47,11 @@ class SMSGateway(Device):
 
     IP = device_property(
         dtype='str',
+        # mandatory=True
     )
 
     PIN = device_property(
-        dtype='str',
-    )
-
-    # ----------
-    # Attributes
-    # ----------
-
-    TextMessage = attribute(
-        dtype='str',
-        access=AttrWriteType.WRITE,
-        doc="SMS content, Max length is 160.",
-    )
-
-    Phone = attribute(
-        dtype='str',
-        access=AttrWriteType.WRITE,
-        doc="SMS Receiveer",
+        dtype='str', default_value="9044"
     )
 
     # ---------------
@@ -77,8 +62,6 @@ class SMSGateway(Device):
         Device.init_device(self)
         # PROTECTED REGION ID(SMSGateway.init_device) ENABLED START #
         self.get_device_properties()
-        self._phone = ''
-        self._textmessage = ''
 
         addr = str(self.IP)
         try:
@@ -113,125 +96,10 @@ class SMSGateway(Device):
         pass
         # PROTECTED REGION END #    //  SMSGateway.delete_device
 
-    # ------------------
-    # Attributes methods
-    # ------------------
-
-    def read_TextMessage(self):
-        # PROTECTED REGION ID(SMSGateway.TextMessage_read) ENABLED START #
-        self.TextMessage.set_value(self._textmessage)
-        return self._textmessage
-        # PROTECTED REGION END #    //  SMSGateway.TextMessage_read
-
-    def write_TextMessage(self, value):
-        # PROTECTED REGION ID(SMSGateway.TextMessage_write) ENABLED START #
-
-        _text_message = value
-        #SMS Max length is 160.
-        if (len(_text_message)) < 160 and (len(_text_message) > 0):
-            _text_message = _text_message[:160]
-        # Check that a sms contains only ASCII characters
-
-        if all(ord(char) < 128 for char in _text_message):
-            self._textmessage = _text_message
-            return self._textmessage
-        else:
-            logging.error('Non-ASCII characters', traceback.format_exc())
-            #Remove anything non-ASCII
-            _text_message = ''.join([i if ord(i) < 128 else ' ' for i in _text_message])
-            self._textmessage = _text_message
-            return self._textmessage
-
-        # PROTECTED REGION END #    //  SMSGateway.TextMessage_write
-
-    def read_Phone(self):
-        # PROTECTED REGION ID(SMSGateway.Phone_read) ENABLED START #
-        self.Phone.set_value(self._phone)
-        return self._phone
-        # PROTECTED REGION END #    //  SMSGateway.Phone_read
-
-    def write_Phone(self, value):
-        # PROTECTED REGION ID(SMSGateway.Phone_write) ENABLED START #
-        import re
-        # Remove ' ', '-' from number
-        value = ''.join([i if i not in [' ', '-'] else '' for i in value])
-
-        # '0048511049007' => '+48511049007'
-        if value[:2] == '00':
-            value = '+' + value[2:]
-
-        # International number
-        def isValidInt(s):
-            Pattern = re.compile("^\+(\d{2}\d{3}\d{3}\d{3})")
-            return Pattern.match(s)
-
-        def isValid(s):
-            Pattern = re.compile("^(\d{3}\d{3}\d{3})")
-            return Pattern.match(s)
-
-        if isValidInt(value) or isValid(value):
-            self._phone = value
-            return self._phone
-
-            # PROTECTED REGION END #    //  SMSGateway.Phone_write
 
     # --------
     # Commands
     # --------
-    @command(
-    )
-    @DebugIt()
-    def SendSMS(self):
-        # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
-
-        # print('Phone {0} and SMS {1}'.format(self._phone, self._textmessage))
-        try:
-            message = self.url + '/manualSMSRefresh.htm?Phone=' + self._phone + '&SMSContent=' + self._textmessage
-            send = requests.get(message)
-            time.sleep(3)
-            send.raise_for_status()
-            self.set_state(PyTango.DevState.ON)
-        except socket.error:
-            self.set_state(PyTango.DevState.UNKNOWN)
-            self.set_status('Message NOT sent')
-            logging.error('Message NOT sent', traceback.format_exc())
-
-        #Log sent SMS on status
-        try:
-            text = ''
-            sms = self.url + '/manualSMS.htm'
-            page = requests.get(sms)
-            soup = BeautifulSoup(page.content, 'html.parser')
-            output = soup.find_all('td')[8:]
-            for i, j in enumerate(output):
-                text = output[i].get_text() + '\n' + text
-            self.set_status(text)
-        except socket.error:
-            self.set_state(PyTango.DevState.UNKNOWN)
-            self.set_status('Pin NOT updated')
-            logging.error('Pin NOT updated', traceback.format_exc())
-
-        # PROTECTED REGION END #    //  SMSGateway.SendSMS
-
-    @DebugIt()
-    def SetPin(self):
-        # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
-
-        #http://192.168.127.254/Set.htm?mode=2&opmode=2&pin=&Band=11&Submit=Submit&setfunc=Cellular
-        try:
-            message = self.url + '/Set.htm?mode=2&opmode=2&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
-            send = requests.get(message)
-            time.sleep(3)
-            send.raise_for_status()
-            self.set_state(PyTango.DevState.ON)
-            self.set_status('PIN updated')
-        except socket.error:
-            self.set_state(PyTango.DevState.UNKNOWN)
-            self.set_status('Pin NOT updated')
-            logging.error('Pin NOT updated', traceback.format_exc())
-
-        # PROTECTED REGION END #    //  SMSGateway.SendSMS
-
 
     @command(
     )
@@ -261,6 +129,10 @@ class SMSGateway(Device):
         # PROTECTED REGION ID(SMSGateway.Connect) ENABLED START #
 
         #http://192.168.127.254/Set.htm?mode=2&opmode=0&pin=&Band=11&Submit=Submit&setfunc=Cellular
+        # message = self.url + '/Set.htm'
+        # payload = {'mode': ' 2', 'opmode': '0', 'pin': str(self.PIN), 'Band': '11', 'Submit': 'Submit', 'setfunc': 'Cellular'}
+        # r = requests.get('message, params=payload)
+
         try:
             message = self.url + '/Set.htm?mode=2&opmode=0&pin=' + str(self.PIN) + '&Band=11&Submit=Submit&setfunc=Cellular'
             send = requests.get(message)
@@ -274,6 +146,83 @@ class SMSGateway(Device):
             logging.error('Message NOT sent', traceback.format_exc())
 
         # PROTECTED REGION END #    //  SMSGateway.Connect
+
+    @command(
+    dtype_in='str', 
+    )
+    @DebugIt()
+    def SendSMS(self, argin):
+        # PROTECTED REGION ID(SMSGateway.SendSMS) ENABLED START #
+        tmp = argin.split(';')
+
+        # Remove ' ', '-' from number
+        value = ''.join([i if i not in [' ', '-'] else '' for i in tmp[0].strip()])
+
+        # '0048511049007' => '+48511049007'
+        if value[:2] == '00':
+            value = '+' + value[2:]
+
+        # International number
+        def isValidInt(s):
+            Pattern = re.compile("^\+(\d{2}\d{3}\d{3}\d{3})")
+            return Pattern.match(s)
+
+        def isValid(s):
+            Pattern = re.compile("^(\d{3}\d{3}\d{3})")
+            return Pattern.match(s)
+
+        if isValidInt(value) or isValid(value):
+            _phone_num = value
+
+        _text_message = tmp[1].strip().decode('ascii', 'ignore')
+
+        #SMS Max length is 160.
+        if (len(_text_message)) < 160 and (len(_text_message) > 0):
+            _text_message = _text_message[:160]
+        # Check that a sms contains only ASCII characters
+
+        if all(ord(char) < 128 for char in _text_message):
+            # print('OK {0}'.format(_text_message))
+            _sms_text = _text_message
+        else:
+            logging.error('Non-ASCII characters', traceback.format_exc())
+            #Remove anything non-ASCII
+            _text_message = ''.join([i if ord(i) < 128 else ' ' for i in _text_message])
+            # print('Non-ASCII characters {0}'.format(_text_message))
+            _sms_text = _text_message
+
+            # print('Phone {0} and SMS {1}'.format(self._phone, self._textmessage))
+            # message = self.url + '/manualSMSRefresh.htm'
+            # payload = {'Phone': str(self._phone), 'SMSContent': str(self._textmessage)}
+            # r = requests.get(message, params=payload)
+
+        try:
+            message = self.url + '/manualSMSRefresh.htm?Phone=' + _phone_num + '&SMSContent=' + _sms_text
+            send = requests.get(message)
+            time.sleep(3)
+            send.raise_for_status()
+            self.set_state(PyTango.DevState.ON)
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Message NOT sent')
+            logging.error('Message NOT sent', traceback.format_exc())
+
+        # Log sent SMS on status
+        try:
+            text = ''
+            sms = self.url + '/manualSMS.htm'
+            page = requests.get(sms)
+            soup = BeautifulSoup(page.content, 'html.parser')
+            output = soup.find_all('td')[8:]
+            for i, j in enumerate(output):
+                text = output[i].get_text() + '\n' + text
+            self.set_status(text)
+        except socket.error:
+            self.set_state(PyTango.DevState.UNKNOWN)
+            self.set_status('Pin NOT updated')
+            logging.error('Pin NOT updated', traceback.format_exc())
+
+        # PROTECTED REGION END #    //  SMSGateway.SendSMS
 
 # ----------
 # Run server
